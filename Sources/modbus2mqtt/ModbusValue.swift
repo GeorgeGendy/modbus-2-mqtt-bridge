@@ -18,6 +18,9 @@ public enum ModbusType: Equatable
     case int32(Int32)
     case int64(Int64)
 
+    case float32(Float)
+    case float64(Double)
+
     case string(String)
 }
 
@@ -51,6 +54,10 @@ public extension ModbusValue
 
             case let .uint64(value): return String(value)
             case let .int64(value): return String(value)
+            
+            case let .float32(value): return String(value)
+            case let .float64(value): return String(value)
+            
             case let .string(value): return String(value)
         }
     }
@@ -111,6 +118,8 @@ extension ModbusValue: Encodable
 
                 case let .uint64(value): try container.encode(value, forKey: .rawValue)
                 case let .int64(value): try container.encode(value, forKey: .rawValue)
+                case let .float32(value): try container.encode(value, forKey: .rawValue)
+                case let .float64(value): try container.encode(value, forKey: .rawValue)
                 case let .string(value): try container.encode(value, forKey: .rawValue)
             }
         }
@@ -205,6 +214,29 @@ extension ModbusValue: Encodable
                     {
                         try container.encode(mbd.hasFactor ? Decimal(value) * mbd.factor! : Decimal(value), forKey: .value)
                     }
+                    
+                case let .float32(value):
+                    if value.isNaN || value.isInfinite
+                    {
+                        let string: String? = nil
+                        try container.encode(string, forKey: .value)
+                    }
+                    else
+                    {
+                        try container.encode(mbd.hasFactor ? Decimal(Double(value)) * mbd.factor! : Decimal(Double(value)), forKey: .value)
+                    }
+                    
+                case let .float64(value):
+                    if value.isNaN || value.isInfinite
+                    {
+                        let string: String? = nil
+                        try container.encode(string, forKey: .value)
+                    }
+                    else
+                    {
+                        try container.encode(mbd.hasFactor ? Decimal(value) * mbd.factor! : Decimal(value), forKey: .value)
+                    }
+                    
                 case let .string(value): try container.encode(value, forKey: .value)
             }
         }

@@ -85,6 +85,7 @@
     "topic": "current/power",
     "title": "Output Power"
   },
+
   {
     "address": "0x20",
     "modbustype": "holding",

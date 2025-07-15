@@ -12,6 +12,41 @@ import NIO
 import JLog
 import SwiftLibModbus
 
+// Helper functions for hex to float conversion
+func convertHexToFloat32(_ registers: [UInt16]) -> Float {
+    guard registers.count >= 2 else { return 0.0 }
+    
+    // Combine two 16-bit registers into a 32-bit value
+    let combined = UInt32(registers[0]) << 16 | UInt32(registers[1])
+    
+    // Convert to float using bit pattern
+    return Float(bitPattern: combined)
+}
+
+func convertHexToFloat64(_ registers: [UInt16]) -> Double {
+    guard registers.count >= 4 else { return 0.0 }
+    
+    // Combine four 16-bit registers into a 64-bit value
+    let combined = UInt64(registers[0]) << 48 | 
+                   UInt64(registers[1]) << 32 | 
+                   UInt64(registers[2]) << 16 | 
+                   UInt64(registers[3])
+    
+    // Convert to double using bit pattern
+    return Double(bitPattern: combined)
+}
+
+// Alternative function for different endianness
+func convertHexToFloat32LittleEndian(_ registers: [UInt16]) -> Float {
+    guard registers.count >= 2 else { return 0.0 }
+    
+    // Combine two 16-bit registers into a 32-bit value (little endian)
+    let combined = UInt32(registers[1]) << 16 | UInt32(registers[0])
+    
+    // Convert to float using bit pattern
+    return Float(bitPattern: combined)
+}
+
 struct JNXServer
 {
     let hostname: String
@@ -377,14 +412,28 @@ func startServing(modbusDevice: ModbusDevice, mqttServer: JNXMQTTServer, options
                 case .int8: let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [Int8]).first!
                     payload = ModbusValue(address: mbd.address, value: .int8(value))
 
-                case .uint16: let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [UInt16]).first!
-                    payload = ModbusValue(address: mbd.address, value: .uint16(value))
+                case .uint16: 
+                    if mbd.floatInterpretation == true {
+                        // Read two uint16 registers and combine them into a float32
+                        let values = try await (modbusDevice.readRegisters(from: mbd.address, count: 2, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [UInt16])
+                        let floatValue = convertHexToFloat32(values)
+                        payload = ModbusValue(address: mbd.address, value: .float32(floatValue))
+                    } else {
+                        let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [UInt16]).first!
+                        payload = ModbusValue(address: mbd.address, value: .uint16(value))
+                    }
 
                 case .int16: let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [Int16]).first!
                     payload = ModbusValue(address: mbd.address, value: .int16(value))
 
                 case .uint32: let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [UInt32]).first!
-                    payload = ModbusValue(address: mbd.address, value: .uint32(value))
+                    if mbd.floatInterpretation == true {
+                        // Reinterpret the uint32 as a float32
+                        let floatValue = Float(bitPattern: value)
+                        payload = ModbusValue(address: mbd.address, value: .float32(floatValue))
+                    } else {
+                        payload = ModbusValue(address: mbd.address, value: .uint32(value))
+                    }
 
                 case .int32: let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [Int32]).first!
                     payload = ModbusValue(address: mbd.address, value: .int32(value))
@@ -394,6 +443,16 @@ func startServing(modbusDevice: ModbusDevice, mqttServer: JNXMQTTServer, options
 
                 case .int64: let value = try await (modbusDevice.readRegisters(from: mbd.address, count: 1, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [Int64]).first!
                     payload = ModbusValue(address: mbd.address, value: .int64(value))
+
+                case .float32: 
+                    let rawValue = try await (modbusDevice.readRegisters(from: mbd.address, count: mbd.length ?? 2, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [UInt16])
+                    let floatValue = convertHexToFloat32(rawValue)
+                    payload = ModbusValue(address: mbd.address, value: .float32(floatValue))
+
+                case .float64:
+                    let rawValue = try await (modbusDevice.readRegisters(from: mbd.address, count: mbd.length ?? 4, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian) as [UInt16])
+                    let floatValue = convertHexToFloat64(rawValue)
+                    payload = ModbusValue(address: mbd.address, value: .float64(floatValue))
 
                 case .string: let value = try await modbusDevice.readASCIIString(from: mbd.address, count: mbd.length!, type: mbd.modbustype, endianness: mbd.endianness ?? .bigEndian)
                     payload = ModbusValue(address: mbd.address, value: .string(value))

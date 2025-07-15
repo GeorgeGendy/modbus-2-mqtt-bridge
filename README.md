@@ -205,3 +205,26 @@ OPTIONS:
 ## Feedback welcome
 
 In case you add json definitions for your own devices, create pull requests. 
+
+
+
+ docker run --name modbus2mqtt modbus2mqtt modbus2mqtt `
+>>     --modbus-server=192.168.1.2 `
+>>     --modbus-port=502 `
+>>     --mqtt-servername=test.mosquitto.org `
+>>     --mqtt-port=1883 `
+>>     --topic=PowerMonitor `
+>>     --device-description-file=power.monitor.json `
+>>     --log-level debug
+
+
+
+from outside the cluster:
+docker run --name modbus2mqtt modbus2mqtt modbus2mqtt `
+>>     --modbus-server=192.168.1.2 `
+>>     --modbus-port=502 `
+>>     --mqtt-servername=192.168.1.30 `
+>>     --mqtt-port=31884 `
+>>     --topic=PowerMonitor `
+>>     --device-description-file=power.monitor.json `
+>>     --log-level debug
