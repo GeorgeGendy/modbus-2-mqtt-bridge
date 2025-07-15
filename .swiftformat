@@ -1,0 +1,24 @@
+# file options
+
+--swiftversion 5.10
+--header "\n {file}\n"
+
+# rules
+
+--disable andOperator
+--disable redundantFileprivate
+--disable redundantReturn
+
+# format options
+
+--indentcase true
+--allman true
+--yodaswap always
+--wrapparameters after-first
+--wraparguments after-first
+--trimwhitespace always
+--self remove
+--wrapenumcases always
+--enable wrapMultilineStatementBraces
+
+

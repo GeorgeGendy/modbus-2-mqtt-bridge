@@ -1,0 +1,122 @@
+[
+    {
+        "address": 108,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/U12",
+        "title": "Voltage phase L1 to L2, V"
+    },
+      {
+        "address": 110,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/U23",
+        "title": "Voltage phase L2 to L3, V"
+    },
+    {
+        "address": 112,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/U31",
+        "title": "Voltage phase L3 to L1, V"
+    },
+    {
+        "address": 126,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/Power",
+        "title": "Active power system, W"
+    },
+    {
+        "address": 134,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/ReactivePower",
+        "title": "Reactive power system, var"
+    },
+    {
+        "address": 142,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/ApparentPower",
+        "title": "Apparent power system, VA"
+    },
+    {
+        "address": 150,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/Frequency",
+        "title": "Frequency system, Hz"
+    },
+    {
+        "address": 152,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/PowerFactor",
+        "title": "Power factor system, -"
+    },
+    {
+        "address": 160,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/ReactivePower",
+        "title": "Reactive power factor system, -"
+    },
+    {
+        "address": 168,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/LoadFactor",
+        "title": "Load factor system, -"
+    },
+    {
+        "address": 176,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/U_MEAN",
+        "title": "Average value of voltage, V"
+    },
+    {
+        "address": 178,
+        "modbustype": "holding",
+        "modbusaccess": "read",
+        "valuetype": "uint32",
+        "mqtt": "visible",
+        "interval": 10,
+        "topic": "PowerMonitor/I_MEAN",
+        "title": "Average value of current, A"
+    }
+]
